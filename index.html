@@ -21,50 +21,70 @@
         .card {
             margin-bottom: 1rem;
         }
+        .load-more-container {
+            margin-top: 1rem;
+        }
     </style>
 </head>
 
 <body>
     <div class="container font-monospace">
         <div id="name" class="row"></div>
+        <div class="text-center load-more-container">
+            <button id="load-more-btn" class="btn btn-primary">Load More</button>
+        </div>
     </div>
     <script>
-        fetch("https://pokeapi.co/api/v2/pokemon?limit=20")
-            .then((res) => res.json())
-            .then((data) => {
-                const datas = data["results"];
-                const ele = document.getElementById("name");
-                datas.forEach((element) => {
-                    fetch(element.url)
-                        .then((res) => res.json())
-                        .then((pokemonData) => {
-                            const height = pokemonData.height;
-                            const weight = pokemonData.weight;
-                            const types = pokemonData.types.map(typeInfo => `<a href='types.html?type=${typeInfo.type.name}'>${typeInfo.type.name}</a>`).join(", ");
-                            const picture = pokemonData.sprites.front_default;
-                            ele.innerHTML += 
-                                "<div class='col-3'>" +
-                                "<div class='card text-center'>" +
-                                "<img class='card-img-top' src='" + picture + "'>" +
-                                "<div class='card-body'>" + 
-                                "<h4 class='card-title'>" + 
-                                element["name"] + 
-                                "</h4>" + 
-                                "<p class='card-title'>" + "Height: " + 
-                                height + 
-                                "</p>" +
-                                "<p class='card-title'>" + "Weight: " +
-                                weight + 
-                                "</p>" +
-                                "<p class='card-title'>" + "Types: " +
-                                types + 
-                                "</p>" +
-                                "<a href='details/details.html?name="+ element["name"] +"' class='btn btn-primary'>Detail</a>" +
-                                "</div></div></div>";
-                        })
-                });
-            })
-            .catch((err) => console.error(err));
+        let offset = 0;
+        const limit = 20;
+        const loadMoreButton = document.getElementById('load-more-btn');
+
+        function fetchPokemons(offset) {
+            fetch(`https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=${limit}`)
+                .then((res) => res.json())
+                .then((data) => {
+                    const datas = data.results;
+                    const ele = document.getElementById("name");
+                    datas.forEach((element) => {
+                        fetch(element.url)
+                            .then((res) => res.json())
+                            .then((pokemonData) => {
+                                const height = pokemonData.height;
+                                const weight = pokemonData.weight;
+                                const types = pokemonData.types.map(typeInfo => `<a href='types.html?type=${typeInfo.type.name}'>${typeInfo.type.name}</a>`).join(", ");
+                                const abilities = pokemonData.abilities.map(abilityInfo => `<a href='ability.html?ability=${abilityInfo.ability.name}'>${abilityInfo.ability.name}</a>`).join(", ");
+                                const stats = pokemonData.stats.map(statInfo => `${statInfo.stat.name}: ${statInfo.base_stat}`).join(", ");
+                                const picture = pokemonData.sprites.front_default;
+
+                                ele.innerHTML += 
+                                    `<div class='col-3'>
+                                        <div class='card text-center'>
+                                            <img class='card-img-top' src='${picture}'>
+                                            <div class='card-body'>
+                                                <h4 class='card-title'>${element.name}</h4>
+                                                <p class='card-text'>Height: ${height}</p>
+                                                <p class='card-text'>Weight: ${weight}</p>
+                                                <p class='card-text'>Types: ${types}</p>
+                                                <p class='card-text'>Abilities: ${abilities}</p>
+                                                <p class='card-text'>Stats: ${stats}</p>
+                                                <a href='details/details.html?name=${element.name}' class='btn btn-primary'>Detail</a>
+                                            </div>
+                                        </div>
+                                    </div>`;
+                            })
+                            .catch((err) => console.error(err));
+                    });
+                })
+                .catch((err) => console.error(err));
+        }
+
+        loadMoreButton.addEventListener('click', () => {
+            offset += limit;
+            fetchPokemons(offset);
+        });
+
+        // Initial fetch
+        fetchPokemons(offset);
     </script>
     <div class="container text-center justify-content-center">
     </div>

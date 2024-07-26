@@ -40,18 +40,23 @@
                     const picture = pokemonData.sprites.front_default;
                     const abilities = pokemonData.abilities.map(ability => ability.ability.name).join(", ");
                     const types = pokemonData.types.map(type => type.type.name).join(", ");
-                    
+                    const stats = pokemonData.stats.map(stat => `<li>${stat.stat.name}: ${stat.base_stat}</li>`).join("");
+
                     ele.innerHTML = 
-                        "<div class='col-12'>" +
-                        "<div class='card'>" +
-                        "<img class='card-img-top' src='" + picture + "' alt='" + pokemonName + "'>" +
-                        "<div class='card-body'>" +
-                        "<h5 class='card-title'>" + pokemonName + "</h5>" +
-                        "<p class='card-text'><strong>Abilities:</strong> " + abilities + "</p>" +
-                        "<p class='card-text'><strong>Types:</strong> " + types + "</p>" +
-                        "<p class='card-text'><strong>Height:</strong> " + pokemonData.height + "</p>" +
-                        "<p class='card-text'><strong>Weight:</strong> " + pokemonData.weight + "</p>" +
-                        "</div></div></div>";
+                        `<div class='col-12'>
+                            <div class='card'>
+                                <img class='card-img-top' src='${picture}' alt='${pokemonName}'>
+                                <div class='card-body'>
+                                    <h5 class='card-title'>${pokemonName}</h5>
+                                    <p class='card-text'><strong>Abilities:</strong> ${abilities}</p>
+                                    <p class='card-text'><strong>Types:</strong> ${types}</p>
+                                    <p class='card-text'><strong>Height:</strong> ${pokemonData.height}</p>
+                                    <p class='card-text'><strong>Weight:</strong> ${pokemonData.weight}</p>
+                                    <p class='card-text'><strong>Stats:</strong></p>
+                                    <ul class='card-text'>${stats}</ul>
+                                </div>
+                            </div>
+                        </div>`;
                 })
                 .catch((err) => console.error(err));
         } else {
